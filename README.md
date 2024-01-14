@@ -81,6 +81,10 @@ ssh 192.168.31.90
 
 ![image-20240114204730196](https://gitee.com/dwgan/PicGo/raw/main/img/202401142047244.png)
 
+#### 4、在PyCharm中使用SSH远程开发
+
+使用该方案，可以解决服务器界面不友好的问题。详见[这里](https://dwgan.gitee.io/super-server-platform/How%20to%20develop%20using%20SSH%20in%20PyCharm.html)
+
 
 
 # 参考文献
