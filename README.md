@@ -85,7 +85,7 @@ ssh 192.168.31.90
 
 为了实现非局域网下访问，引入了内网穿透，这里将Common-Server映射到公网IP，可实现非局域网下访问。注意非局域网下仅有10M带宽，因此传输大文件建议使用局域网。具体连接方式如图
 
-![image-20240114204730196](https://gitee.com/dwgan/PicGo/raw/main/img/202401142047244.png)
+![image-20240115105916908](https://gitee.com/dwgan/PicGo/raw/main/img/202401151059053.png)
 
 #### 4、在PyCharm中使用SSH远程开发
 
