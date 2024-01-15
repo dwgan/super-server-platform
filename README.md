@@ -55,7 +55,9 @@ LXD支持多个用户，这里配置了Common-Server作为公共使用的容器�
 
 ![image-20240114203353541](https://gitee.com/dwgan/PicGo/raw/main/img/202401142033612.png)
 
-![image-20240114203540145](https://gitee.com/dwgan/PicGo/raw/main/img/202401142035215.png)
+![image-20240114203540145](https://gitee.com/dwgan/PicGo/raw/main/img/202401151147634.png)
+
+![image-20240115114805293](https://gitee.com/dwgan/PicGo/raw/main/img/202401151148380.png)
 
 ![image-20240114203331560](https://gitee.com/dwgan/PicGo/raw/main/img/202401142033663.png)
 
