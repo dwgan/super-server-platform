@@ -8,6 +8,8 @@
 
 该仓库包含了关于super-server-platform的搭建、升级记录和使用建议，服务器搭建和升级过程中涉及到的材料将会被包含到这个仓库中，方便回溯和更新。
 
+
+
 # 多人在线服务器搭建方案
 
 针对多人服务器平台通常有以下几种方案：
@@ -37,7 +39,9 @@ LXD底层也是使用LXC技术，并可以提供更多灵活性和功能。LXD�
 
 ![img](https://gitee.com/dwgan/PicGo/raw/main/img/202401171428281.png)
 
-# 基于LXD容器的服务平台配置
+
+
+# 基于LXD容器的服务平台特性
 
 具体服务器配置细节参考文末链接，这里不再详细赘述。
 
@@ -51,6 +55,8 @@ LXD支持多个用户，这里配置了Common-Server作为公共使用的容器�
 
 ![image-20240114201846610](https://gitee.com/dwgan/PicGo/raw/main/img/202401142018652.png)
 
+
+
 ## 资源隔离
 
 如图，在宿主机上可存在4个4090GPU，通过对容器进行配置，可以指定宿主机上的GPU2和GPU3映射到容器系统的GPU0和GPU1上，并且其它的GPU资源对于容器是不可见的，因此可以实现良好的资源隔离。
@@ -63,11 +69,17 @@ LXD支持多个用户，这里配置了Common-Server作为公共使用的容器�
 
 ![image-20240114203331560](https://gitee.com/dwgan/PicGo/raw/main/img/202401142033663.png)
 
+
+
 ## 文件共享
 
 为了实现各个容器系统的文件共享，需要引入共享文件夹。如图，宿主机和Common-Server容器系统可以同时访问/home/xd/share文件夹
 
 ![image-20240114204049301](https://gitee.com/dwgan/PicGo/raw/main/img/202401142040334.png)
+
+
+
+# 基于LXD容器的服务平台使用方案及操作指南
 
 ## 连接方式
 
@@ -89,11 +101,15 @@ ssh xd@192.168.31.90
 
 #### 在PyCharm中使用SSH远程开发
 
-使用该方案，可以解决服务器界面不友好的问题。详见[How to develop using SSH in PyCharm](https://dwgan.gitee.io/super-server-platform/How%20to%20develop%20using%20SSH%20in%20PyCharm.html)
+使用该方案，可以解决服务器界面不友好的问题。详见[How to develop using SSH in PyCharm](https://dwgan.gitee.io/super-server-platform/How to develop using SSH in PyCharm)
 
-## 镜像和快照功能
 
-由于容器是运行在宿主机上的，宿主机具有对容器系统进行备份、恢复的能力。LXD容器提供了镜像和快照功能，将当前系统生成镜像可以将其快速部署到新的系统上（需要LXD环境）；通过生成系统快照，可以在系统出现问题时快速恢复到原先正常的状态。具体操作参考[How to create LXD snapshot and image]()，**注意：这一操作需要有权限访问宿主机。**
+
+## 镜像和快照
+
+由于容器是运行在宿主机上的，宿主机具有对容器系统进行备份、恢复的能力。LXD容器提供了镜像和快照功能，将当前系统生成镜像可以将其快速部署到新的系统上（需要LXD环境）；通过生成系统快照，可以在系统出现问题时快速恢复到原先正常的状态。具体操作参考[How to create LXD snapshot and image](https://dwgan.gitee.io/super-server-platform/How to create LXD snapshot and image)，**注意：这一操作需要有权限访问宿主机。**
+
+
 
 ## 新增用户
 
@@ -103,11 +119,13 @@ ssh xd@192.168.31.90
 
 #### 在Common-Server上新增用户
 
-第一种方式是在一个公用容器（已经建立好了一个Common- Server）上直接建立多个用户，然后每个用户分配对应的权限（目前按照最高用户权限来）。这种方式的好处是操作简单，无需重新配置环境，对于新手或者对于无特殊环境要求的开发者友好（Common-Server的内网穿透、PyTorch环境已经配置好了）。具体操作参考[How to create a new LXD-based system]()，**注意：这一操作需要有权限访问宿主机。**
+第一种方式是在一个公用容器（已经建立好了一个Common- Server）上直接建立多个用户，然后每个用户分配对应的权限（目前按照最高用户权限来）。这种方式的好处是操作简单，无需重新配置环境，对于新手或者对于无特殊环境要求的开发者友好（Common-Server的内网穿透、PyTorch环境已经配置好了）。具体操作参考[How to create a new LXD-based system](https://dwgan.gitee.io/super-server-platform/How to create a new LXD-based system)，**注意：这一操作需要有权限访问宿主机。**
 
 #### 新增LXC容器用户
 
-某些用户对开发环境有特殊要求，且不希望和其它用户共享环境配置，则建议新增一个LXD容器系统。对于新增LXD容器系统，目前有两种方式，其中一种是直接根据Common-Server的镜像克隆一个系统（系统版本是Ubuntu18.04）。对于需要其它版本系统的用户，需要重新下载新的镜像安装，此时可根据需要配置开发环境。具体操作参考[How to create a new LXD-based system]()，**注意：这一操作需要有权限访问宿主机。**
+某些用户对开发环境有特殊要求，且不希望和其它用户共享环境配置，则建议新增一个LXD容器系统。对于新增LXD容器系统，目前有两种方式，其中一种是直接根据Common-Server的镜像克隆一个系统（系统版本是Ubuntu18.04）。对于需要其它版本系统的用户，需要重新下载新的镜像安装，此时可根据需要配置开发环境。具体操作参考[[How to create a new LXD-based system](https://dwgan.gitee.io/super-server-platform/How to create a new LXD-based system)，**注意：这一操作需要有权限访问宿主机。**
+
+
 
 ## TODO
 
