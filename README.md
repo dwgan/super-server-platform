@@ -103,7 +103,7 @@ ssh xd@192.168.31.90
 
 #### 在PyCharm中使用SSH远程开发
 
-使用该方案，可以解决服务器界面不友好的问题。详见[How to develop using SSH in PyCharm](https://dwgan.github.io/super-server-platform/How to develop using SSH in PyCharm)
+使用该方案，可以解决服务器界面不友好的问题。详见[How to develop using SSH in PyCharm](./How to develop using SSH in PyCharm)
 
 
 
