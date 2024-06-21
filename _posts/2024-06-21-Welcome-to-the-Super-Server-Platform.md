@@ -4,8 +4,6 @@ title: "Welcome to the Super Server Platform"
 date: 2024-06-21
 ---
 
-# Welcome to the Super Server Platform
-
 
 # 前言
 
