@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "How-to-create-a-new-LXD-based-system"
+title: "How to create a new LXD based system"
 date: 2024-01-17
 ---
 
