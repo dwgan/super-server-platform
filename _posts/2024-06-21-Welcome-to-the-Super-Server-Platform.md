@@ -1,7 +1,7 @@
 ---
 layout: post
-title: How to develop using SSH in PyCharm
-date: 2024-06-10
+title: "Welcome to the Super Server Platform"
+date: 2024-06-21
 ---
 
 # Welcome to the Super Server Platform
