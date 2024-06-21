@@ -1,3 +1,9 @@
+---
+layout: post
+title: "How-to-create-a-new-LXD-based-system"
+date: 2024-01-17
+---
+
 # 新增LXC容器用户
 
 基于LXD容器的系统最大的好处就是能够为每个用户提供一个完整的独立的开发环境（Linux内核是所有用户公用的），每个用户都可以根据自己的需求修改系统配置而不会影响到其他用户。

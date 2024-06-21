@@ -110,13 +110,13 @@ ssh xd@192.168.31.90
 
 #### 在PyCharm中使用SSH远程开发
 
-使用该方案，可以解决服务器界面不友好的问题。详见[How to develop using SSH in PyCharm](./How to develop using SSH in PyCharm)
+使用该方案，可以解决服务器界面不友好的问题。详见[How to develop using SSH in PyCharm]({{ site.baseurl }}{% post_url 2024-01-17-How-to-develop-using-SSH-in-PyCharm %})
 
 
 
 ### 镜像和快照
 
-由于容器是运行在宿主机上的，宿主机具有对容器系统进行备份、恢复的能力。LXD容器提供了镜像和快照功能，将当前系统生成镜像可以将其快速部署到新的系统上（需要LXD环境）；通过生成系统快照，可以在系统出现问题时快速恢复到原先正常的状态。具体操作参考[How to create LXD snapshot and image](https://dwgan.github.io/super-server-platform/How to create LXD snapshot and image)，**注意：这一操作需要有权限访问宿主机。**
+由于容器是运行在宿主机上的，宿主机具有对容器系统进行备份、恢复的能力。LXD容器提供了镜像和快照功能，将当前系统生成镜像可以将其快速部署到新的系统上（需要LXD环境）；通过生成系统快照，可以在系统出现问题时快速恢复到原先正常的状态。具体操作参考[How to create LXD snapshot and image]({{ site.baseurl }}{% post_url 2024-01-17-How-to-create-LXD-snapshot-and-image %})，**注意：这一操作需要有权限访问宿主机。**
 
 
 
@@ -128,11 +128,11 @@ ssh xd@192.168.31.90
 
 #### 在Common-Server上新增用户
 
-第一种方式是在一个公用容器（已经建立好了一个Common- Server）上直接建立多个用户，然后每个用户分配对应的权限（目前按照最高用户权限来）。这种方式的好处是操作简单，无需重新配置环境，对于新手或者对于无特殊环境要求的开发者友好（Common-Server的内网穿透、PyTorch环境已经配置好了）。具体操作参考[How to create a new LXD-based system](https://dwgan.github.io/super-server-platform/How to create a new LXD-based system)，**注意：这一操作需要有权限访问宿主机。**
+第一种方式是在一个公用容器（已经建立好了一个Common- Server）上直接建立多个用户，然后每个用户分配对应的权限（目前按照最高用户权限来）。这种方式的好处是操作简单，无需重新配置环境，对于新手或者对于无特殊环境要求的开发者友好（Common-Server的内网穿透、PyTorch环境已经配置好了）。具体操作参考[How to create a new LXD-based system]({{ site.baseurl }}{% post_url 2024-01-17-How-to-create-a-new-LXD-based-system %})，**注意：这一操作需要有权限访问宿主机。**
 
 #### 新增LXC容器用户
 
-某些用户对开发环境有特殊要求，且不希望和其它用户共享环境配置，则建议新增一个LXD容器系统。对于新增LXD容器系统，目前有两种方式，其中一种是直接根据Common-Server的镜像克隆一个系统（系统版本是Ubuntu18.04）。对于需要其它版本系统的用户，需要重新下载新的镜像安装，此时可根据需要配置开发环境。具体操作参考[[How to create a new LXD-based system](https://dwgan.github.io/super-server-platform/How to create a new LXD-based system)，**注意：这一操作需要有权限访问宿主机。**
+某些用户对开发环境有特殊要求，且不希望和其它用户共享环境配置，则建议新增一个LXD容器系统。对于新增LXD容器系统，目前有两种方式，其中一种是直接根据Common-Server的镜像克隆一个系统（系统版本是Ubuntu18.04）。对于需要其它版本系统的用户，需要重新下载新的镜像安装，此时可根据需要配置开发环境。具体操作参考[[How to create a new LXD-based system]({{ site.baseurl }}{% post_url 2024-01-17-How-to-create-a-new-LXD-based-system %})，**注意：这一操作需要有权限访问宿主机。**
 
 
 
