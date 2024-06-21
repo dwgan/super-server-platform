@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "How-to-create-LXD-snapshot-and-image"
+title: "How to create LXD snapshot and image"
 date: 2024-01-17
 ---
 

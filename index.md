@@ -132,7 +132,7 @@ ssh xd@192.168.31.90
 
 #### 新增LXC容器用户
 
-某些用户对开发环境有特殊要求，且不希望和其它用户共享环境配置，则建议新增一个LXD容器系统。对于新增LXD容器系统，目前有两种方式，其中一种是直接根据Common-Server的镜像克隆一个系统（系统版本是Ubuntu18.04）。对于需要其它版本系统的用户，需要重新下载新的镜像安装，此时可根据需要配置开发环境。具体操作参考[[How to create a new LXD-based system]({{ site.baseurl }}{% post_url 2024-01-17-How-to-create-a-new-LXD-based-system %})，**注意：这一操作需要有权限访问宿主机。**
+某些用户对开发环境有特殊要求，且不希望和其它用户共享环境配置，则建议新增一个LXD容器系统。对于新增LXD容器系统，目前有两种方式，其中一种是直接根据Common-Server的镜像克隆一个系统（系统版本是Ubuntu18.04）。对于需要其它版本系统的用户，需要重新下载新的镜像安装，此时可根据需要配置开发环境。具体操作参考[How to create a new LXD-based system]({{ site.baseurl }}{% post_url 2024-01-17-How-to-create-a-new-LXD-based-system %})，**注意：这一操作需要有权限访问宿主机。**
 
 
 
