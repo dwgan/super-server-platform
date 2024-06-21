@@ -4,13 +4,13 @@ title: "How to develop using SSH in PyCharm"
 date: 2024-01-17
 ---
 
-# 前言
+## 一、前言
 
 对于开发者而言，通常更偏好图形界面，因为它直观简洁。然而，某些服务器提供商为了节约成本，通常默认仅提供一个SSH连接方式，这对于远程开发带来了一定挑战。
 
 大多数开发工具为了满足这个需求，通常会提供一个远程SSH开发功能。以PyCharm为例，可以通过SSH实现服务器端和客户端的文件及编程指令同步，这为远程开发带来了极大的便利。
 
-# PyCharm的SSH开发原理
+## 二、PyCharm的SSH开发原理
 
 PyCharm中的远程SSH开发原理如图所示，本地客户端和服务器主机通过SSH和SFTP进行连接和文件传输
 
@@ -20,7 +20,7 @@ PyCharm中的远程SSH开发原理如图所示，本地客户端和服务器主�
 
 ![Remote Execution in PyCharm – Random experiments in software engineering](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406212016360.png)
 
-# PyCharm的SSH开发配置
+## 三、PyCharm的SSH开发配置
 
 PyCharm的SSH开发需要配置远程解释器和文件映射关系，主要步骤如下：
 
@@ -58,7 +58,7 @@ which python
 
 ![image-20240114215803132](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406212017271.png)
 
-# 参考文献
+## 参考文献
 
 [搞AI开发，你不得不会的PyCharm技术](https://www.cnblogs.com/huaweiyun/p/16775793.html)
 
