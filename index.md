@@ -136,15 +136,94 @@ ssh xd@192.168.31.90
 
 
 
-## 五、TODO
+## 五、远程桌面
 
-### 5.1 LXD管理界面
+### 5.1 方案选择和部署细节
 
- LXD相比于LXC的好处就是多了界面管理，但是目前由于某些技术上的原因，还未能实现界面
+在Windows下远程访问Linux服务器的桌面，有几种常见的方法：
 
-### 5.1 VNC桌面
+**xrdp**（X Remote Desktop Protocol）：xrdp允许Windows使用RDP（Remote Desktop Protocol）来连接到Linux服务器的桌面。这种方式相对简便，因为它使用Windows自带的远程桌面客户端。
 
-由于某些技术上的原因，目前仅支持SSH连接。如需桌面显示请期待后续更新。。。
+**VNC**（Virtual Network Computing）：VNC是一种基于图形界面的远程桌面协议，它允许用户远程访问Linux桌面。
+
+因为xrdp可以兼容Windows远程桌面，因此这里采用xrdp这种方法。
+
+#### 5.1.1 安装 RDP 服务器
+
+在Ubuntu系统上，需要安装一个RDP服务器，如xrdp。使用以下命令安装：
+```
+sudo apt-get update
+sudo apt-get install xrdp
+```
+
+#### 5.1.2 配置 Xfce4 桌面
+
+xrdp默认使用Xfce4作为桌面环境，使用以下命令安装：
+
+```
+sudo apt-get install xfce4
+```
+
+#### 5.1.3 配置 xrdp
+
+安装完成后，可能需要配置xrdp以使用Xfce4。这通常涉及到编辑.xsession文件，确保它指向Xfce4。这里使用文本编辑器 Vim 编辑 ~/.xsession 文件，并添加以下行：
+
+```
+xfce4-session
+```
+
+#### 5.1.4 启动 xrdp 服务
+
+```
+sudo systemctl enable xrdp
+sudo systemctl start xrdp
+```
+
+#### 5.1.5 允许通过防火墙
+
+这一步非必须，如果能连接到 RDP 服务器，则不需要执行这一步。否则，需要确保 RDP 端口 3389 在您的防火墙中是开放的。如果您使用的是ufw，可以使用以下命令：
+
+```
+sudo ufw allow 3389/tcp
+```
+
+
+
+### 5.2 远程桌面使用方式
+
+#### 5.2.1 连接到RDP服务器
+
+在Windows机器上，打开`Remote Desktop Connection`应用程序，并输入Ubuntu服务器的IP地址。您应该会看到登录界面，输入Ubuntu的用户名和密码后，您就可以通过RDP访问Xfce4桌面了。例如：
+
+![image-20240624221802706](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406242218747.png)
+
+<img src="https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406242213030.png" alt="image-20240624221259949" style="zoom:50%;" />
+
+![image-20240624221604514](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406242216693.png)
+
+#### 5.2.2 从外部网络连接到RDP服务器
+
+从外部网络访问内网的RDP服务器，需要把涉及的端口映射到公网IP，通常是3389端口，具体方法自行查阅资料，连接方法为：
+
+```
+公网IP号:公网映射的端口号
+```
+
+例如：
+
+```
+jack.tshinghua.me:33389
+```
+
+**本实验室人员需获取连接方式请联系管理员。**
+
+
+
+## 六、TODO
+
+### 5.2 LXD管理界面
+
+ LXD相比于LXC的好处就是多了界面管理，但是目前由于某些技术上的原因，还未能实现界面，请期待后续更新
 
 
 
@@ -157,6 +236,8 @@ ssh xd@192.168.31.90
 [ubuntu使用VNC实现远程桌面](https://blog.csdn.net/weixin_44543463/article/details/113846220)
 
 [LXD教程入门实践 配置独立ip 挂载gpu显卡驱动 制作镜像](https://blog.csdn.net/liuquan0071/article/details/103352574)
+
+[【保姆级教程】Windows 远程登录 Ubuntu桌面环境_windows登录ubantu桌面-CSDN博客](https://blog.csdn.net/u010522887/article/details/138137107)
 
 所需要的材料可以在[这里](https://pan.baidu.com/s/1cjyBnPFdct7Y91AS4KV5Xg?pwd=kg3j)找到
 
