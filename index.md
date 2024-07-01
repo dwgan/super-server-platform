@@ -221,9 +221,30 @@ jack.tshinghua.me:33389
 
 ## 六、TODO
 
-### 5.2 LXD管理界面
+### 6.1 LXD管理界面
 
  LXD相比于LXC的好处就是多了界面管理，但是目前由于某些技术上的原因，还未能实现界面，请期待后续更新
+
+### 6.2 一些尚未彻底解决的BUG
+
+#### 6.2.1 主机断电导致的GPU无法识别
+
+```python
+xd@Common-Server:~$ conda activate pytorch
+(pytorch) xd@Common-Server:~$ python
+Python 3.8.18 (default, Sep 11 2023, 13:40:15) 
+[GCC 11.2.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import torch
+>>> print(torch.cuda.is_available())
+/home/xd/.conda/envs/pytorch/lib/python3.8/site-packages/torch/cuda/__init__.py:138: UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing enble devices to be zero. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+  return torch._C._cuda_getDeviceCount() > 0
+False
+>>> exit()
+(pytorch) xd@Common-Server:~$ sudo reboot
+```
+
+可能由于主机断点重启之后分配给容器的某些参数错误，具体原因没有深入研究。解决方法是不需要修改任何的配置，重启容器直到可以识别为止，一般重启两三次可以解决。
 
 
 
