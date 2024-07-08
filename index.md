@@ -62,29 +62,134 @@ LXD支持多个用户，这里配置了Common-Server作为公共使用的容器�
 
 这里采用了独立IP配置，因此每个容器在局域网下都有具有独立的IP。
 
-![image-20240114201846610](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211933205.png)
-
-
+```shell
+(base) xd@xd-Super-Server:~$ sudo lxc list
++---------------+---------+-----------------------+------+------------+-----------+
+|     NAME      |  STATE  |         IPV4          | IPV6 |    TYPE    | SNAPSHOTS |
++---------------+---------+-----------------------+------+------------+-----------+
+| Common-Server | RUNNING | 192.168.31.90 (eth0)  |      | PERSISTENT | 0         |
++---------------+---------+-----------------------+------+------------+-----------+
+| user1-server  | RUNNING | 192.168.31.xxx (eth0) |      | PERSISTENT | 1         |
++---------------+---------+-----------------------+------+------------+-----------+
+| user2-server  | RUNNING | 192.168.31.xxx (eth0) |      | PERSISTENT | 1         |
++---------------+---------+-----------------------+------+------------+-----------+
+| user3-server  | RUNNING | 192.168.31.xxx (eth0) |      | PERSISTENT | 0         |
++---------------+---------+-----------------------+------+------------+-----------+
+```
 
 ### 3.2 资源隔离
 
 如图，在宿主机上可存在4个4090GPU，通过对容器进行配置，可以指定宿主机上的GPU2和GPU3映射到容器系统的GPU0和GPU1上，并且其它的GPU资源对于容器是不可见的，因此可以实现良好的资源隔离。
 
-![image-20240114203353541](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211932837.png)
+```shell
+(base) xd@xd-Super-Server:~$ nvidia-smi
+Mon Jul  8 23:02:38 2024       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.146.02             Driver Version: 535.146.02   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce RTX 4090        Off | 00000000:31:00.0 Off |                  Off |
+| 69%   72C    P2             311W / 450W |  11140MiB / 24564MiB |     91%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA GeForce RTX 4090        Off | 00000000:4B:00.0 Off |                  Off |
+| 68%   72C    P2             307W / 450W |   7552MiB / 24564MiB |     95%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   2  NVIDIA GeForce RTX 4090        Off | 00000000:B1:00.0 Off |                  Off |
+| 60%   66C    P2             303W / 450W |   7552MiB / 24564MiB |     97%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   3  NVIDIA GeForce RTX 4090        Off | 00000000:CA:00.0 Off |                  Off |
+| 63%   67C    P2             301W / 450W |   7552MiB / 24564MiB |     92%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+```
 
-![image-20240114203540145](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211932605.png)
+```shell
+(base) xd@xd-Super-Server:~$ sudo lxc config edit Common-Server
 
-![image-20240115114805293](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211934317.png)
+### A sample configuration looks like:
+### name: container1
+### profiles:
+### - default
+### config:
+###   volatile.eth0.hwaddr: 00:16:3e:e9:f8:7f
+### devices:
+###   homedir:
+###     path: /extra
+###     source: /home/user
+###     type: disk
+### ephemeral: false
+###
+### Note that the name is shown but cannot be changed
 
-![image-20240114203331560](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211932225.png)
+architecture: x86_64
+config:
+  image.architecture: amd64
+  image.description: Ubuntu bionic amd64 (20240113_07:42)
+  image.os: Ubuntu
+  image.release: bionic
+  image.serial: "20240113_07:42"
+  security.privileged: "true"
+  volatile.base_image: 64509028accfe5a2727603687820708af03fa9a04f6821d40d1734a620cd587d
+  volatile.eth0.hwaddr: 00:16:3e:09:74:9f
+  volatile.idmap.base: "0"
+  volatile.idmap.next: '[]'
+  volatile.last_state.idmap: '[]'
+  volatile.last_state.power: RUNNING
+devices:
+  data:
+    path: /home/xd/share
+    source: /home/xd/share
+    type: disk
+  gpu0:
+    id: "2"
+    type: gpu
+  gpu1:
+    id: "3"
+    type: gpu
+ephemeral: false
+profiles:
+- default
+stateful: false
+description: ""
 
+```
 
+```shell
+xd@Common-Server:~$ nvidia-smi
+Mon Jul  8 15:06:34 2024       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.146.02             Driver Version: 535.146.02   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce RTX 4090        Off | 00000000:4B:00.0 Off |                  Off |
+| 68%   72C    P2             304W / 450W |   7552MiB / 24564MiB |     92%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA GeForce RTX 4090        Off | 00000000:B1:00.0 Off |                  Off |
+| 60%   66C    P2             292W / 450W |   7552MiB / 24564MiB |     92%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+```
 
 ### 3.3 文件共享
 
 为了实现各个容器系统的文件共享，需要引入共享文件夹。如图，宿主机和Common-Server容器系统可以同时访问/home/xd/share文件夹
 
-![image-20240114204049301](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211934828.png)
+```shell
+(base) xd@xd-Super-Server:~$ ls /home/xd/share/
+bcompare-4.4.7.28397_amd64.deb  BSDS500  EnvConfig                frpnc                                   
+xd@Common-Server:~$ ls /home/xd/share/
+bcompare-4.4.7.28397_amd64.deb  BSDS500  EnvConfig                frpnc                                   
+```
 
 
 
@@ -96,29 +201,29 @@ LXD支持多个用户，这里配置了Common-Server作为公共使用的容器�
 
 例如要连接Common-Server，可在局域网下使用以下命令连接
 
+```shell
+(base) xd@xd-Super-Server:~$ ssh xd@192.168.31.90
+xd@192.168.31.90's password: 
+Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-150-generic x86_64)
 ```
-ssh xd@192.168.31.90
-```
-
-![image-20240114202701161](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211932706.png)
 
 #### 4.1.2 非局域网下的SSH访问
 
 为了实现非局域网下访问，引入了内网穿透，这里将Common-Server映射到公网IP，可实现非局域网下访问。注意非局域网下仅有10M带宽，因此传输大文件建议使用局域网，或者采用网盘传输。具体连接方式如图
 
-![image-20240115105916908](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406211932015.png)
+```
+(base) xd@xd-Super-Server:~$ ssh -p 2222 xd@xxx.domain
+xd@xxx.domain's password: 
+Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-150-generic x86_64)
+```
 
 #### 4.1.3 在PyCharm中使用SSH远程开发
 
 使用该方案，可以解决服务器界面不友好的问题。详见[How to develop using SSH in PyCharm]({{ site.baseurl }}{% post_url 2024-01-17-How-to-develop-using-SSH-in-PyCharm %})
 
-
-
 ### 4.2 镜像和快照
 
 由于容器是运行在宿主机上的，宿主机具有对容器系统进行备份、恢复的能力。LXD容器提供了镜像和快照功能，将当前系统生成镜像可以将其快速部署到新的系统上（需要LXD环境）；通过生成系统快照，可以在系统出现问题时快速恢复到原先正常的状态。具体操作参考[How to create LXD snapshot and image]({{ site.baseurl }}{% post_url 2024-01-17-How-to-create-LXD-snapshot-and-image %})，**注意：这一操作需要有权限访问宿主机。**
-
-
 
 ### 4.3 新增用户
 
@@ -133,8 +238,6 @@ ssh xd@192.168.31.90
 #### 4.3.2 新增LXC容器用户
 
 某些用户对开发环境有特殊要求，且不希望和其它用户共享环境配置，则建议新增一个LXD容器系统。对于新增LXD容器系统，目前有两种方式，其中一种是直接根据Common-Server的镜像克隆一个系统（系统版本是Ubuntu18.04）。对于需要其它版本系统的用户，需要重新下载新的镜像安装，此时可根据需要配置开发环境。具体操作参考[How to create a new LXD-based system]({{ site.baseurl }}{% post_url 2024-01-17-How-to-create-a-new-LXD-based-system %})，**注意：这一操作需要有权限访问宿主机。**
-
-
 
 ### 4.4 拓展空间
 
@@ -203,15 +306,11 @@ sudo systemctl start xrdp
 sudo ufw allow 3389/tcp
 ```
 
-
-
 ### 5.2 远程桌面使用方式
 
-#### 5.2.1 连接到RDP服务器
+#### 5.2.1 局域网内连接到RDP服务器
 
-在Windows机器上，打开`Remote Desktop Connection`应用程序，并输入Ubuntu服务器的IP地址。您应该会看到登录界面，输入Ubuntu的用户名和密码后，您就可以通过RDP访问Xfce4桌面了。例如：
-
-![image-20240624221802706](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406242218747.png)
+首先连接局域网，在Windows机器上，打开`Remote Desktop Connection`应用程序，并输入Ubuntu服务器的IP地址（例如192.168.31.90）。您应该会看到登录界面，输入Ubuntu的用户名和密码后，您就可以通过RDP访问Xfce4桌面了。例如：
 
 <img src="https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406242213030.png" alt="image-20240624221259949" style="zoom:50%;" />
 
@@ -222,7 +321,7 @@ sudo ufw allow 3389/tcp
 从外部网络访问内网的RDP服务器，需要把涉及的端口映射到公网IP，通常是3389端口，具体方法自行查阅资料，连接方法为：
 
 ```
-公网IP号:公网映射的端口号
+公网IP/域名:公网映射的端口号
 ```
 
 例如：
