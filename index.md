@@ -359,7 +359,9 @@ False
 (pytorch) xd@Common-Server:~$ sudo reboot
 ```
 
-可能由于主机断点重启之后分配给容器的某些参数错误，具体原因没有深入研究。解决方法是不需要修改任何的配置，重启容器直到可以识别为止，一般重启两三次可以解决。
+可能由于主机断点重启之后分配给容器的某些参数错误，具体原因参考[UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing env variable CUDA_VISIBLE_DEVICES after program start. Setting the available devices to be zero - PyTorch Forums](https://discuss.pytorch.org/t/userwarning-cuda-initialization-cuda-unknown-error-this-may-be-due-to-an-incorrectly-set-up-environment-e-g-changing-env-variable-cuda-visible-devices-after-program-start-setting-the-available-devices-to-be-zero/129335/5)。
+
+解决方法是不需要修改任何的配置，重启容器直到可以识别为止，一般重启两三次可以解决。
 
 
 
