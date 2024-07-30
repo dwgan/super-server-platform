@@ -34,7 +34,9 @@ PyCharm的SSH开发需要配置远程解释器和文件映射关系，主要步�
 
 3、输入远程服务器的IP和端口和用户名，这里的Host是非局域网下的域名，局域网下建议直接使用IP
 
-<img src="https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406212016794.png" alt="image-20240114214607054" style="zoom:50%;" />
+
+
+<img src="https://raw.githubusercontent.com/dwgan/PicGo/main/img/202407310159511.png" alt="image-20240731015911394" style="zoom:50%;" />
 
 4、配置python解释器和远程服务器文件夹映射位置，解释器位置可在服务器中输入以下指令得到
 
@@ -48,11 +50,11 @@ which python
 
 5、将本地文件同步到远程服务器
 
-![image-20240114215102182](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406212017033.png)
+![image-20240731020056007](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202407310200266.png)
 
 6、选择比较本地和服务器端的文件大小和时间戳，将不同的部分进行同步即可
 
-![image-20240114215129195](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202406212017569.png)
+![image-20240731020132073](https://raw.githubusercontent.com/dwgan/PicGo/main/img/202407310201238.png)
 
 7、开始Debug
 
