@@ -63,7 +63,7 @@ LXD支持多个用户，这里配置了Common-Server作为公共使用的容器�
 这里采用了独立IP配置，因此每个容器在局域网下都有具有独立的IP。
 
 ```shell
-(base) xd@xd-Super-Server:~$ sudo lxc list
+(base) user@user-Super-Server:~$ sudo lxc list
 +---------------+---------+-----------------------+------+------------+-----------+
 |     NAME      |  STATE  |         IPV4          | IPV6 |    TYPE    | SNAPSHOTS |
 +---------------+---------+-----------------------+------+------------+-----------+
@@ -82,7 +82,7 @@ LXD支持多个用户，这里配置了Common-Server作为公共使用的容器�
 如图，在宿主机上可存在4个4090GPU，通过对容器进行配置，可以指定宿主机上的GPU2和GPU3映射到容器系统的GPU0和GPU1上，并且其它的GPU资源对于容器是不可见的，因此可以实现良好的资源隔离。
 
 ```shell
-(base) xd@xd-Super-Server:~$ nvidia-smi
+(base) user@user-Super-Server:~$ nvidia-smi
 Mon Jul  8 23:02:38 2024       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 535.146.02             Driver Version: 535.146.02   CUDA Version: 12.2     |
@@ -110,7 +110,7 @@ Mon Jul  8 23:02:38 2024
 ```
 
 ```shell
-(base) xd@xd-Super-Server:~$ sudo lxc config edit Common-Server
+(base) user@user-Super-Server:~$ sudo lxc config edit Common-Server
 
 ### A sample configuration looks like:
 ### name: container1
@@ -143,8 +143,8 @@ config:
   volatile.last_state.power: RUNNING
 devices:
   data:
-    path: /home/xd/share
-    source: /home/xd/share
+    path: /home/user/share
+    source: /home/user/share
     type: disk
   gpu0:
     id: "2"
@@ -161,7 +161,7 @@ description: ""
 ```
 
 ```shell
-xd@Common-Server:~$ nvidia-smi
+user@Common-Server:~$ nvidia-smi
 Mon Jul  8 15:06:34 2024       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 535.146.02             Driver Version: 535.146.02   CUDA Version: 12.2     |
@@ -182,12 +182,12 @@ Mon Jul  8 15:06:34 2024
 
 ### 3.3 文件共享
 
-为了实现各个容器系统的文件共享，需要引入共享文件夹。如图，宿主机和Common-Server容器系统可以同时访问/home/xd/share文件夹
+为了实现各个容器系统的文件共享，需要引入共享文件夹。如图，宿主机和Common-Server容器系统可以同时访问/home/user/share文件夹
 
 ```shell
-(base) xd@xd-Super-Server:~$ ls /home/xd/share/
+(base) user@user-Super-Server:~$ ls /home/user/share/
 bcompare-4.4.7.28397_amd64.deb  BSDS500  EnvConfig                frpnc                                   
-xd@Common-Server:~$ ls /home/xd/share/
+user@Common-Server:~$ ls /home/user/share/
 bcompare-4.4.7.28397_amd64.deb  BSDS500  EnvConfig                frpnc                                   
 ```
 
@@ -202,8 +202,8 @@ bcompare-4.4.7.28397_amd64.deb  BSDS500  EnvConfig                frpnc
 例如要连接Common-Server，可在局域网下使用以下命令连接
 
 ```shell
-(base) xd@xd-Super-Server:~$ ssh xd@192.168.31.90
-xd@192.168.31.90's password: 
+(base) user@user-Super-Server:~$ ssh user@192.168.31.90
+user@192.168.31.90's password: 
 Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-150-generic x86_64)
 ```
 
@@ -212,8 +212,8 @@ Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-150-generic x86_64)
 为了实现非局域网下访问，引入了内网穿透，这里将Common-Server映射到公网IP，可实现非局域网下访问。注意非局域网下仅有10M带宽，因此传输大文件建议使用局域网，或者采用网盘传输。具体连接方式如图
 
 ```
-(base) xd@xd-Super-Server:~$ ssh -p 2222 xd@xxx.domain
-xd@xxx.domain's password: 
+(base) user@user-Super-Server:~$ ssh -p 2222 user@xxx.domain
+user@xxx.domain's password: 
 Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 5.4.0-150-generic x86_64)
 ```
 
@@ -345,18 +345,18 @@ jack.tshinghua.me:33389
 #### 6.2.1 主机断电导致的GPU无法识别
 
 ```python
-xd@Common-Server:~$ conda activate pytorch
-(pytorch) xd@Common-Server:~$ python
+user@Common-Server:~$ conda activate pytorch
+(pytorch) user@Common-Server:~$ python
 Python 3.8.18 (default, Sep 11 2023, 13:40:15) 
 [GCC 11.2.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import torch
 >>> print(torch.cuda.is_available())
-/home/xd/.conda/envs/pytorch/lib/python3.8/site-packages/torch/cuda/__init__.py:138: UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing enble devices to be zero. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+/home/user/.conda/envs/pytorch/lib/python3.8/site-packages/torch/cuda/__init__.py:138: UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing enble devices to be zero. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
   return torch._C._cuda_getDeviceCount() > 0
 False
 >>> exit()
-(pytorch) xd@Common-Server:~$ sudo reboot
+(pytorch) user@Common-Server:~$ sudo reboot
 ```
 
 可能由于主机断点重启之后分配给容器的某些参数错误，具体原因参考[UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing env variable CUDA_VISIBLE_DEVICES after program start. Setting the available devices to be zero - PyTorch Forums](https://discuss.pytorch.org/t/userwarning-cuda-initialization-cuda-unknown-error-this-may-be-due-to-an-incorrectly-set-up-environment-e-g-changing-env-variable-cuda-visible-devices-after-program-start-setting-the-available-devices-to-be-zero/129335/5)。
