@@ -340,7 +340,7 @@ jack.tshinghua.me:33389
 
  LXD相比于LXC的好处就是多了界面管理，但是目前由于某些技术上的原因，还未能实现界面，请期待后续更新
 
-### 6.2 一些尚未彻底解决的BUG
+### 6.2 一些解决的BUG
 
 #### 6.2.1 主机断电导致的GPU无法识别
 
@@ -361,7 +361,61 @@ False
 
 可能由于主机断点重启之后分配给容器的某些参数错误，具体原因参考[UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing env variable CUDA_VISIBLE_DEVICES after program start. Setting the available devices to be zero - PyTorch Forums](https://discuss.pytorch.org/t/userwarning-cuda-initialization-cuda-unknown-error-this-may-be-due-to-an-incorrectly-set-up-environment-e-g-changing-env-variable-cuda-visible-devices-after-program-start-setting-the-available-devices-to-be-zero/129335/5)。
 
-解决方法是不需要修改任何的配置，重启容器直到可以识别为止，一般重启两三次可以解决。
+解决方法是再LXC服务启动之前在宿主机上初始化一下torch环境，首先需要新建一个脚本
+
+```shell
+#!/bin/bash
+
+# 激活 conda 环境
+source /path/to/anaconda3/etc/profile.d/conda.sh
+conda activate pytorch
+
+# 运行 Python 脚本
+python - <<EOF
+import torch
+print(torch.cuda.is_available())
+EOF
+
+# 退出 conda 环境
+conda deactivate
+```
+
+添加权限
+
+```shell
+chmod +x /home/your_user/scripts/init_torch.sh
+```
+
+新建自启动服务
+
+```shell
+sudo nano /etc/systemd/system/init_torch.service
+```
+
+内容如下
+
+```shell
+[Unit]
+Description=Run init_torch script before LXC containers start
+Before=lxc-net.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/your_user/scripts/init_torch.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+添加自启动服务到系统中
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable init_torch.service
+sudo systemctl start init_torch.service
+sudo systemctl status init_torch.service
+```
 
 
 
