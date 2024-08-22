@@ -53,6 +53,8 @@ LXD底层也是使用LXC技术，并可以提供更多灵活性和功能。LXD�
 
 <p align="center">
 	<img src="https://dwgan.top/PicGo/img/202406211933798.png" alt="image-20240117221213953" style="zoom:100%;" />
+</p>
+
 
 具体服务器配置细节参考文末链接，这里不再详细赘述，以下简要介绍该平台使用方案。
 
@@ -253,6 +255,8 @@ LXC系统给每个用户提供了一个独立、完整的存储管理系统，�
 
 <p align="center">
     <img src="https://dwgan.top/PicGo/img/image-20240708145857133.png" alt="image-20240708145857133" style="zoom:100%;" />
+</p>
+
 
 实现细节见[How to expand storage pool]({{ site.baseurl }}{% post_url 2024-07-08-How-to-expand-storage-pool %})
 
@@ -317,9 +321,12 @@ sudo ufw allow 3389/tcp
 
 <p align="center">
 	<img src="https://dwgan.top/PicGo/img/202406242213030.png" alt="image-20240624221259949" style="zoom:50%;" />
+</p>
+
 
 <p align="center">
 	<img src="https://dwgan.top/PicGo/img/202406242216693.png" alt="image-20240624221604514" style="zoom:80%;" />
+</p>
 
 #### 5.2.2 从外部网络连接到RDP服务器
 
