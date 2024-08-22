@@ -37,8 +37,9 @@ Docker容器提供了一个隔离的开发环境，在不同容器中的用户�
 
 LXC容器属于**系统级**虚拟化方案，用在单个主机上运行多个隔离的Linux系统容器，例如同时运行Ubuntu和CentOS，各个系统公用一套Linux内核，并且具有完全独立的开发环境。LXC是基于Linux内核的容器技术，与Linux操作系统更加天然集成，提供更好的性能。但LXC也有缺点：如无法有效支持跨主机之间的容器迁移、管理复杂等。而LXD很好地解决了这些问题。
 
-
-![](https://dwgan.top/PicGo/img/202406211932591.png)
+<p align="center">
+    <img src="https://dwgan.top/PicGo/img/202406211932591.png" style="zoom: 100%;" />
+</p>
 
 ### 2.5 基于LXD容器
 
@@ -50,7 +51,8 @@ LXD底层也是使用LXC技术，并可以提供更多灵活性和功能。LXD�
 
 基于LXD容器平台的核心是LXC，它允许建立多个系统级别的容器，每个容器即是一个完整的Linux操作系统。一个容器既可以支持多个用户共享，也可以一个用户独享。每个容器通过网络与共享文件夹的方式与宿主机进行通讯，每个容器可以独享一个IP地址。LXD支持Web图形用户界面，且兼容所有LXC的命令操作。通过配置LXC容器，可以实现对不同容器进行硬件资源（例如GPU）分配。宿主机系统和LXC容器系统共享一个Linux内核，相同内核的不同Linux发行版本可以同时运行。
 
-![image-20240117221213953](https://dwgan.top/PicGo/img/202406211933798.png)
+<p align="center">
+	<img src="https://dwgan.top/PicGo/img/202406211933798.png" alt="image-20240117221213953" style="zoom:100%;" />
 
 具体服务器配置细节参考文末链接，这里不再详细赘述，以下简要介绍该平台使用方案。
 
@@ -249,7 +251,8 @@ LXC系统给每个用户提供了一个独立、完整的存储管理系统，�
 
 由于我需要添加的是同一块硬盘上的其他分区，且考虑到实现的复杂性，这里选择直接增加分区个数来增加存储池的大小。
 
-![image-20240708145857133](https://dwgan.top/PicGo/img/image-20240708145857133.png)
+<p align="center">
+    <img src="https://dwgan.top/PicGo/img/image-20240708145857133.png" alt="image-20240708145857133" style="zoom:100%;" />
 
 实现细节见[How to expand storage pool]({{ site.baseurl }}{% post_url 2024-07-08-How-to-expand-storage-pool %})
 
@@ -312,9 +315,11 @@ sudo ufw allow 3389/tcp
 
 首先连接局域网，在Windows机器上，打开`Remote Desktop Connection`应用程序，并输入Ubuntu服务器的IP地址（例如192.168.31.90）。您应该会看到登录界面，输入Ubuntu的用户名和密码后，您就可以通过RDP访问Xfce4桌面了。例如：
 
-<img src="https://dwgan.top/PicGo/img/202406242213030.png" alt="image-20240624221259949" style="zoom:50%;" />
+<p align="center">
+	<img src="https://dwgan.top/PicGo/img/202406242213030.png" alt="image-20240624221259949" style="zoom:50%;" />
 
-![image-20240624221604514](https://dwgan.top/PicGo/img/202406242216693.png)
+<p align="center">
+	<img src="https://dwgan.top/PicGo/img/202406242216693.png" alt="image-20240624221604514" style="zoom:80%;" />
 
 #### 5.2.2 从外部网络连接到RDP服务器
 
