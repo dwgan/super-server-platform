@@ -17,7 +17,7 @@ LXC系统给每个用户提供了一个独立、完整的存储管理系统，�
 由于我需要添加的是同一块硬盘上的其他分区，且考虑到实现的复杂性，这里选择直接增加分区个数来增加存储池的大小。
 
 <p align="center">
-	<img src="https://dwgan.top/PicGo/img/image-20240708145857133.png" alt="image-20240708145857133" style="zoom:80%;" />
+	<img src="https://cdn.jsdelivr.net/gh/dwgan/PicGo/img/image-20240708145857133.png" alt="image-20240708145857133" style="zoom:80%;" />
 </p>
 
 查看存储池状态
