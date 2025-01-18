@@ -429,6 +429,10 @@ sudo systemctl start init_torch.service
 sudo systemctl status init_torch.service
 ```
 
+#### 6.2.2 宿主机或者容器无法上网（以太网相关问题）
+
+[How to configure unique ip for container]({{ site.baseurl }}{% post_url 2025-01-18-How-to-configure-unique-ip-for-container %})
+
 
 
 ## 参考文献
