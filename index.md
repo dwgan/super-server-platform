@@ -1,4 +1,4 @@
----
+<img width="1118" height="1064" alt="image" src="https://github.com/user-attachments/assets/aebcf386-a850-4a7e-9396-0171294b61c4" />---
 layout: default
 title: Home
 ---
@@ -433,7 +433,196 @@ sudo systemctl status init_torch.service
 
 [How to configure unique ip for container]({{ site.baseurl }}{% post_url 2025-01-18-How-to-configure-unique-ip-for-container %})
 
+#### 6.2.3 更换网口导致LXC连不上网
 
+有时候会出现重启之后连不上网的问题，只能更换网口。由于LXC容器采用的是桥接方式，默认配置的网口发生了变动，需要手动更新。
+
+首先确认当前采用哪个接口作为主干
+
+```bash
+xd@xd-Super-Server:~$ cat /etc/lxc/default.conf
+lxc.net.0.type = veth
+lxc.net.0.link = br0
+lxc.net.0.flags = up
+lxc.net.0.hwaddr = fe:c0:01:21:f0:bb 
+```
+
+查看当前网络情况
+
+```sh
+xd@xd-Super-Server:~$ ifconfig
+br0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        ether 00:00:00:00:00:00  txqueuelen 1000  (以太网)
+        RX packets 82  bytes 12748 (12.7 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 191  bytes 24372 (24.3 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:f5:3f:86:95  txqueuelen 0  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enx6c1ff766cc1a: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.31.33  netmask 255.255.255.0  broadcast 192.168.31.255
+        inet6 fe80::7c5c:bccd:e91a:d8d0  prefixlen 64  scopeid 0x20<link>
+        ether 6c:1f:f7:66:cc:1a  txqueuelen 1000  (以太网)
+        RX packets 265910  bytes 84951955 (84.9 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 302011  bytes 132802338 (132.8 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enxb03af2b6059f: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        ether b0:3a:f2:b6:05:9f  txqueuelen 1000  (以太网)
+        RX packets 56  bytes 16670 (16.6 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 2522  bytes 426059 (426.0 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (本地环回)
+        RX packets 1387794  bytes 258840714 (258.8 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1387794  bytes 258840714 (258.8 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lxcbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 10.0.3.1  netmask 255.255.255.0  broadcast 0.0.0.0
+        ether 00:16:3e:00:00:00  txqueuelen 1000  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lxdbr0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.128.199.1  netmask 255.255.255.0  broadcast 0.0.0.0
+        inet6 fe80::6047:44ff:fe1a:3ee8  prefixlen 64  scopeid 0x20<link>
+        inet6 fd42:43e2:487f:c26e::1  prefixlen 64  scopeid 0x0<global>
+        ether 62:47:44:1a:3e:e8  txqueuelen 1000  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 271  bytes 28533 (28.5 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+将这个主干网络桥接到对应的接口上，这里是`enx6c1ff766cc1a`
+
+```bash
+sudo nano /etc/netplan/01-netcfg.yaml
+```
+
+修改为如下（或根据原配置调整）：
+
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enx6c1ff766cc1a:
+      dhcp4: no
+  bridges:
+    br0:
+      interfaces: [enx6c1ff766cc1a]
+      dhcp4: yes
+      parameters:
+        stp: false
+        forward-delay: 0
+```
+
+保存后：
+
+```bash
+sudo netplan apply
+```
+
+可以看到现在变成了这样
+
+```sh
+xd@xd-Super-Server:~$ ifconfig
+br0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.31.33  netmask 255.255.255.0  broadcast 192.168.31.255
+        inet6 fe80::6e1f:f7ff:fe66:cc1a  prefixlen 64  scopeid 0x20<link>
+        ether 6c:1f:f7:66:cc:1a  txqueuelen 1000  (以太网)
+        RX packets 18777  bytes 2671873 (2.6 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 19714  bytes 4208572 (4.2 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        ether 02:42:f5:3f:86:95  txqueuelen 0  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enx6c1ff766cc1a: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        ether 6c:1f:f7:66:cc:1a  txqueuelen 1000  (以太网)
+        RX packets 292285  bytes 96257064 (96.2 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 328267  bytes 137683011 (137.6 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enxb03af2b6059f: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 169.254.3.1  netmask 255.255.255.0  broadcast 169.254.3.255
+        inet6 fe80::6fdd:6457:822d:7488  prefixlen 64  scopeid 0x20<link>
+        ether b0:3a:f2:b6:05:9f  txqueuelen 1000  (以太网)
+        RX packets 57  bytes 16998 (16.9 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 2561  bytes 434517 (434.5 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (本地环回)
+        RX packets 1487003  bytes 266912713 (266.9 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1487003  bytes 266912713 (266.9 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lxcbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        ether 00:16:3e:00:00:00  txqueuelen 1000  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lxdbr0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        ether 62:47:44:1a:3e:e8  txqueuelen 1000  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 280  bytes 29990 (29.9 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+veth52255P: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet6 fe80::fca0:caff:fe17:b685  prefixlen 64  scopeid 0x20<link>
+        ether fe:a0:ca:17:b6:85  txqueuelen 1000  (以太网)
+        RX packets 4227  bytes 325713 (325.7 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7790  bytes 8252380 (8.2 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+veth5XNP37: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet6 fe80::fc07:efff:fefb:49b3  prefixlen 64  scopeid 0x20<link>
+        ether fe:07:ef:fb:49:b3  txqueuelen 1000  (以太网)
+        RX packets 669  bytes 61558 (61.5 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 3103  bytes 566848 (566.8 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+vethNXEWP4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet6 fe80::fc09:29ff:fec0:1c43  prefixlen 64  scopeid 0x20<link>
+        ether fe:09:29:c0:1c:43  txqueuelen 1000  (以太网)
+        RX packets 569  bytes 59096 (59.0 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 2867  bytes 241944 (241.9 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
 
 ## 参考文献
 
