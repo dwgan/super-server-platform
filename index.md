@@ -624,6 +624,121 @@ vethNXEWP4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 ```
 
+如果以上方法不管用，可以尝试直接将容器桥接到网口
+
+```
+xd@xd-Super-Server:~$ ifconfig
+br0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet6 fe80::5471:67ff:fe59:aa1a  prefixlen 64  scopeid 0x20<link>
+        ether 56:71:67:59:aa:1a  txqueuelen 1000  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 66  bytes 12628 (12.6 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:f1:13:d9:f3  txqueuelen 0  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enx6c1ff766cc1a: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.31.33  netmask 255.255.255.0  broadcast 192.168.31.255
+        inet6 fe80::fc08:8243:f4d8:95a4  prefixlen 64  scopeid 0x20<link>
+        ether 6c:1f:f7:66:cc:1a  txqueuelen 1000  (以太网)
+        RX packets 6804  bytes 1988710 (1.9 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 6135  bytes 3901996 (3.9 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enxb03af2b6059f: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 169.254.3.1  netmask 255.255.255.0  broadcast 169.254.3.255
+        inet6 fe80::101d:a906:9bdd:2445  prefixlen 64  scopeid 0x20<link>
+        ether b0:3a:f2:b6:05:9f  txqueuelen 1000  (以太网)
+        RX packets 4  bytes 1030 (1.0 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 67  bytes 12862 (12.8 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (本地环回)
+        RX packets 962  bytes 86385 (86.3 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 962  bytes 86385 (86.3 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lxcbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 10.0.3.1  netmask 255.255.255.0  broadcast 0.0.0.0
+        ether 00:16:3e:00:00:00  txqueuelen 1000  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lxdbr0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.128.199.1  netmask 255.255.255.0  broadcast 0.0.0.0
+        inet6 fe80::acee:d9ff:fec4:7fff  prefixlen 64  scopeid 0x20<link>
+        inet6 fd42:43e2:487f:c26e::1  prefixlen 64  scopeid 0x0<global>
+        ether ae:ee:d9:c4:7f:ff  txqueuelen 1000  (以太网)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 66  bytes 9079 (9.0 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+xd@xd-Super-Server:~$ sudo lxc profile edit default
+
+### This is a yaml representation of the profile.
+### Any line starting with a '# will be ignored.
+###
+### A profile consists of a set of configuration items followed by a set of
+### devices.
+###
+### An example would look like:
+### name: onenic
+### config:
+###   raw.lxc: lxc.aa_profile=unconfined
+### devices:
+###   eth0:
+###     nictype: bridged
+###     parent: lxdbr0
+###     type: nic
+###
+### Note that the name is shown but cannot be changed
+
+config: {}
+description: Default LXD profile
+devices:
+  eth0:
+    name: eth0
+    nictype: macvlan # 这里可以改成bridged
+    parent: enx6c1ff766cc1a # 这里直接接到网口
+    type: nic
+  root:
+    path: /
+    pool: default
+    type: disk
+name: default
+used_by:
+- /1.0/containers/Common-Server
+- /1.0/containers/gdw-server
+- /1.0/containers/zjy-server
+- /1.0/containers/hwt-server
+- /1.0/containers/yhc-server
+- /1.0/containers/build-server
+- /1.0/containers/zxy-server
+- /1.0/containers/dvc-server
+- /1.0/containers/ubuntu2204
+- /1.0/containers/ubuntu
+- /1.0/containers/zzk-server
+- /1.0/containers/xjh-server
+
+
+```
+
 ## 参考文献
 
 [LXD vs Docker](https://ubuntu.com/blog/lxd-vs-docker)
